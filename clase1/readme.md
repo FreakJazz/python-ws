@@ -50,6 +50,7 @@ Tienes un peso saludable.
 ### 📌 Requisitos:
 - Solicita dos números enteros: uno menor y uno mayor.
 - Valida que el primer número sea menor que el segundo.
+- Validar que sean números enteros positivos.
 - Muestra:
   - Todos los números pares en ese rango (inclusive)
   - La cantidad total de números en ese rango
