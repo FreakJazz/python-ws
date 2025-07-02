@@ -1,0 +1,213 @@
+# CRUD de Productos con Flask - Tarea Clase 3
+# Versión: 1.01
+# Autor: Gabriel Rivera
+# Descripción: Aplicación Flask con templates separados
+
+from flask import Flask, render_template, request, redirect, url_for, flash
+
+# Inicializar la aplicación Flask
+app = Flask(__name__)
+app.secret_key = 'clave_secreta_para_sesiones'
+
+# Lista global para almacenar productos en memoria
+productos = [
+    {'id': 1, 'nombre': 'Laptop', 'precio': 999.99, 'cantidad': 5},
+    {'id': 2, 'nombre': 'Mouse', 'precio': 25.50, 'cantidad': 15},
+    {'id': 3, 'nombre': 'Teclado', 'precio': 45.00, 'cantidad': 8}
+]
+
+# Variable global para generar IDs únicos
+next_id = 4
+
+
+def encontrar_producto_por_id(producto_id):
+    """
+    Encuentra un producto por su ID.
+    
+    Args:
+        producto_id (int): ID del producto a buscar
+        
+    Returns:
+        dict or None: Producto encontrado o None si no existe
+    """
+    for producto in productos:
+        if producto['id'] == producto_id:
+            return producto
+    return None
+
+
+def generar_nuevo_id():
+    """
+    Genera un nuevo ID único para productos.
+    
+    Returns:
+        int: Nuevo ID único
+    """
+    global next_id
+    nuevo_id = next_id
+    next_id += 1
+    return nuevo_id
+
+
+@app.route('/')
+def index():
+    """Ruta principal que redirige a la lista de productos."""
+    return redirect(url_for('listar_productos'))
+
+
+@app.route('/productos')
+def listar_productos():
+    """Ruta para mostrar todos los productos."""
+    return render_template('productos_lista.html', productos=productos)
+
+
+@app.route('/productos/nuevo', methods=['GET', 'POST'])
+def nuevo_producto():
+    """Ruta para crear un nuevo producto."""
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        nombre = request.form.get('nombre', '').strip()
+        precio = request.form.get('precio', '')
+        cantidad = request.form.get('cantidad', '')
+        
+        # Validaciones
+        if not nombre:
+            flash('El nombre del producto es obligatorio.', 'error')
+            return render_template('productos_form.html', producto=None, accion='nuevo')
+        
+        try:
+            precio = float(precio)
+            cantidad = int(cantidad)
+            
+            if precio < 0:
+                flash('El precio no puede ser negativo.', 'error')
+                return render_template('productos_form.html', producto=None, accion='nuevo')
+            
+            if cantidad < 0:
+                flash('La cantidad no puede ser negativa.', 'error')
+                return render_template('productos_form.html', producto=None, accion='nuevo')
+                
+        except ValueError:
+            flash('Precio y cantidad deben ser números válidos.', 'error')
+            return render_template('productos_form.html', producto=None, accion='nuevo')
+        
+        # Verificar si ya existe un producto con el mismo nombre
+        for producto in productos:
+            if producto['nombre'].lower() == nombre.lower():
+                flash('Ya existe un producto con ese nombre.', 'error')
+                return render_template('productos_form.html', producto=None, accion='nuevo')
+        
+        # Crear nuevo producto
+        nuevo_producto = {
+            'id': generar_nuevo_id(),
+            'nombre': nombre,
+            'precio': precio,
+            'cantidad': cantidad
+        }
+        
+        productos.append(nuevo_producto)
+        flash(f'Producto "{nombre}" creado exitosamente.', 'success')
+        return redirect(url_for('listar_productos'))
+    
+    # GET request - mostrar formulario
+    return render_template('productos_form.html', producto=None, accion='nuevo')
+
+
+@app.route('/productos/editar/<int:id>', methods=['GET', 'POST'])
+def editar_producto(id):
+    """Ruta para editar un producto existente."""
+    producto = encontrar_producto_por_id(id)
+    
+    if not producto:
+        flash('Producto no encontrado.', 'error')
+        return redirect(url_for('listar_productos'))
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        nombre = request.form.get('nombre', '').strip()
+        precio = request.form.get('precio', '')
+        cantidad = request.form.get('cantidad', '')
+        
+        # Validaciones
+        if not nombre:
+            flash('El nombre del producto es obligatorio.', 'error')
+            return render_template('productos_form.html', producto=producto, accion='editar')
+        
+        try:
+            precio = float(precio)
+            cantidad = int(cantidad)
+            
+            if precio < 0:
+                flash('El precio no puede ser negativo.', 'error')
+                return render_template('productos_form.html', producto=producto, accion='editar')
+            
+            if cantidad < 0:
+                flash('La cantidad no puede ser negativa.', 'error')
+                return render_template('productos_form.html', producto=producto, accion='editar')
+                
+        except ValueError:
+            flash('Precio y cantidad deben ser números válidos.', 'error')
+            return render_template('productos_form.html', producto=producto, accion='editar')
+        
+        # Verificar si ya existe otro producto con el mismo nombre
+        for p in productos:
+            if p['id'] != id and p['nombre'].lower() == nombre.lower():
+                flash('Ya existe otro producto con ese nombre.', 'error')
+                return render_template('productos_form.html', producto=producto, accion='editar')
+        
+        # Actualizar producto
+        producto['nombre'] = nombre
+        producto['precio'] = precio
+        producto['cantidad'] = cantidad
+        
+        flash(f'Producto "{nombre}" actualizado exitosamente.', 'success')
+        return redirect(url_for('listar_productos'))
+    
+    # GET request - mostrar formulario con datos actuales
+    return render_template('productos_form.html', producto=producto, accion='editar')
+
+
+@app.route('/productos/eliminar/<int:id>')
+def eliminar_producto(id):
+    """Ruta para eliminar un producto."""
+    producto = encontrar_producto_por_id(id)
+    
+    if not producto:
+        flash('Producto no encontrado.', 'error')
+    else:
+        nombre_producto = producto['nombre']
+        productos.remove(producto)
+        flash(f'Producto "{nombre_producto}" eliminado exitosamente.', 'success')
+    
+    return redirect(url_for('listar_productos'))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Manejo de errores 404."""
+    return render_template('404.html'), 404
+
+
+if __name__ == '__main__':
+    print("🚀 Iniciando aplicación Flask...")
+    print("📍 Accede a: http://127.0.0.1:5000")
+    print("📋 Rutas disponibles:")
+    print("   • /productos - Lista de productos")
+    print("   • /productos/nuevo - Crear producto")
+    print("   • /productos/editar/<id> - Editar producto")
+    print("   • /productos/eliminar/<id> - Eliminar producto")
+    print("-" * 50)
+    print("📁 Estructura de archivos necesaria:")
+    print("   mi_proyecto/")
+    print("   ├── app.py")
+    print("   ├── templates/")
+    print("   │   ├── base.html")
+    print("   │   ├── productos_lista.html")
+    print("   │   ├── productos_form.html")
+    print("   │   └── 404.html")
+    print("   └── static/")
+    print("       └── css/")
+    print("           └── style.css")
+    print("-" * 50)
+    
+    app.run(debug=True, host='127.0.0.1', port=5000)

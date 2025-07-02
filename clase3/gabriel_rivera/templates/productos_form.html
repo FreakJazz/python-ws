@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if accion == 'editar' else 'Nuevo' }} Producto{% endblock %}
+
+{% block content %}
+<h2>{{ '✏️ Editar' if accion == 'editar' else '➕ Nuevo' }} Producto</h2>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="nombre">Nombre del Producto:</label>
+        <input type="text" id="nombre" name="nombre" 
+               value="{{ producto.nombre if producto else '' }}" 
+               required>
+    </div>
+    
+    <div class="form-group">
+        <label for="precio">Precio ($):</label>
+        <input type="number" id="precio" name="precio" 
+               step="0.01" min="0" 
+               value="{{ producto.precio if producto else '' }}" 
+               required>
+    </div>
+    
+    <div class="form-group">
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" name="cantidad" 
+               min="0" 
+               value="{{ producto.cantidad if producto else '' }}" 
+               required>
+    </div>
+    
+    <div class="text-center mt-3">
+        <button type="submit" class="btn btn-primary">
+            {{ '💾 Actualizar' if accion == 'editar' else '💾 Guardar' }} Producto
+        </button>
+        <a href="{{ url_for('listar_productos') }}" class="btn btn-warning">🔙 Cancelar</a>
+    </div>
+</form>
+{% endblock %}
