@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background-color: #f4f4f4; }
+        h1, h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .btn { padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; }
+        .btn-crear { background-color: #28a745; display: inline-block; margin-bottom: 1em; }
+        .btn-editar { background-color: #ffc107; }
+        .btn-eliminar { background-color: #dc3545; }
+        form { display: inline; }
+        .flash { padding: 1em; margin-bottom: 1em; border-radius: 5px; }
+        .flash.success { background-color: #d4edda; color: #155724; }
+        .flash.error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Gestión de Productos</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <a href="{{ url_for('crear_producto') }}" class="btn btn-crear">Crear Nuevo Producto</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>${{ "%.2f"|format(producto.precio) }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>
+                    <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-editar">Editar</a>
+                    <form action="{{ url_for('eliminar_producto', id=producto.id) }}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                        <button type="submit" class="btn btn-eliminar">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No hay productos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
