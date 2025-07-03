@@ -4,9 +4,7 @@ Desarrollado por Edi TANA
 
 Mi video aquí
 
-  <video controls="true" allowfullscreen="true" >
-    <source src="ejemploQuizEnReflexEdisonTANA.mp4" type="video/mp4">
-  </video>
+https://github.com/gnuleospython/python-ws/raw/refs/heads/main/proyectoedisontanav/ejemploQuizEnReflexEdisonTANA.mp4
 
 ## Licencia
 
