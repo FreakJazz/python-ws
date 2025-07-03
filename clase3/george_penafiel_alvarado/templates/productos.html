@@ -1,46 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="text-center my-5">
-        <h1 class="display-4 fw-bold mb-4">Nuestro Catálogo de Productos</h1>
-        <p class="lead">Explora nuestra selección de productos. Puedes añadir más información aquí.</p>
-    </div>
+    <h1 class="mb-4">Nuestro Catálogo de Productos</h1>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">Producto A</h5>
-                    <p class="card-text text-muted">Descripción breve del Producto A. Ideal para X propósito.</p>
-                    <span class="badge bg-primary fs-5">$19.99</span>
-                    <a href="#" class="btn btn-outline-primary mt-3">Ver detalles</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">Producto B</h5>
-                    <p class="card-text text-muted">Descripción breve del Producto B. Perfecto para Y uso.</p>
-                    <span class="badge bg-success fs-5">$25.50</span>
-                    <a href="#" class="btn btn-outline-success mt-3">Ver detalles</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">Producto C</h5>
-                    <p class="card-text text-muted">Descripción breve del Producto C. La mejor opción para Z.</p>
-                    <span class="badge bg-info fs-5">$9.75</span>
-                    <a href="#" class="btn btn-outline-info mt-3">Ver detalles</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <a href="{{ url_for('crear_producto') }}" class="btn btn-primary mb-3">Crear Producto</a>
 
-    <div class="text-center mt-5">
-        <p class="fs-5">¿Quieres añadir un producto? ¡Esta es tu oportunidad para expandir la aplicación!</p>
-        <a href="{{ url_for('home') }}" class="btn btn-secondary mt-2">Volver al inicio</a>
-    </div>
+    {% if productos %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>${{ "%.2f" | format(producto.precio) }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{{ url_for('eliminar_producto', id=producto.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">No hay productos registrados.</div>
+    {% endif %}
 {% endblock %}
