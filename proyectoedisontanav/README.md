@@ -4,7 +4,9 @@ Desarrollado por Edi TANA
 
 Mi video aquí
 
-[![Ver el video](https://github.com/gnuleospython/python-ws/raw/refs/heads/main/proyectoedisontanav/portada.jpg)](https://github.com/gnuleospython/python-ws/raw/refs/heads/main/proyectoedisontanav/ejemploQuizEnReflexEdisonTANA.mp4) portada.jpg
+[![Ver el video](https://github.com/gnuleospython/python-ws/raw/refs/heads/main/proyectoedisontanav/portada.jpg)](https://github.com/user-attachments/assets/74304462-c9fc-4e32-a5aa-cdf6a467b49d)
+
+
 
 ## Licencia
 
