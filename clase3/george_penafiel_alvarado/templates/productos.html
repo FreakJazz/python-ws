@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Nuestro Catálogo de Productos</h1>
+
+    <a href="{{ url_for('crear_producto') }}" class="btn btn-primary mb-3">Crear Producto</a>
+
+    {% if productos %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>${{ "%.2f" | format(producto.precio) }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{{ url_for('eliminar_producto', id=producto.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">No hay productos registrados.</div>
+    {% endif %}
+{% endblock %}
