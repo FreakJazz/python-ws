@@ -13,6 +13,9 @@
 # 5. mkdir flask_crud_usuarios​
 # 6. cd flask_crud_usuarios​
 # 5. Ejecutar app: flask run
+# pip freeze > requirements.txt
+# pip3 install -r requirements.txt 
+# deactivate
 
 
 from flask import Flask
